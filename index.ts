@@ -1,2 +1,3 @@
-async function on<T>(eventTarget: EventTarget, eventName: string): Promise<T> {
-}
+export { adoptRequest } from './adoptRequest';
+export { on } from './on';
+export { once } from './once';

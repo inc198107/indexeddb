@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "files": [
+    "./adoptRequest.ts",
+    "./index.ts",
+    "./index.d.ts",
+    "./on.ts",
+    "./once.ts",
+    "./tests/adoptRequest.test.ts",
+    "./tests/on.test.ts",
+    "./tests/once.test.ts"
+  ]
+}
