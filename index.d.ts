@@ -1,33 +1,12 @@
-export type OnceOptions = {
-  signal?: AbortSignal;
-};
+import type { IDBEventMap, IDBTarget, OnOptions, OnceOptions } from './types';
 
-export type OnOptions = {
-  signal?: AbortSignal;
-};
+export type { IDBEventMap, IDBTarget, OnOptions, OnceOptions } from './types';
 
-export function once<K extends keyof IDBRequestEventMap>(
-  eventTarget: IDBRequest,
+export function once<T extends IDBTarget, K extends keyof IDBEventMap<T>>(
+  eventTarget: T,
   eventName: K,
   options?: OnceOptions,
-): Promise<IDBRequestEventMap[K]>;
-
-export function once<K extends keyof IDBOpenDBRequestEventMap>(
-  eventTarget: IDBOpenDBRequest,
-  eventName: K,
-  options?: OnceOptions,
-): Promise<IDBOpenDBRequestEventMap[K]>;
-
-export function once<K extends keyof IDBTransactionEventMap>(
-  eventTarget: IDBTransaction,
-  eventName: K,
-  options?: OnceOptions,
-): Promise<IDBTransactionEventMap[K]>;
-export function once<K extends keyof IDBDatabaseEventMap>(
-  eventTarget: IDBDatabase,
-  eventName: K,
-  options?: OnceOptions,
-): Promise<IDBDatabaseEventMap[K]>;
+): Promise<IDBEventMap<T>[K]>;
 
 export function once<T extends Event = Event>(
   eventTarget: EventTarget,
@@ -35,29 +14,11 @@ export function once<T extends Event = Event>(
   options?: OnceOptions,
 ): Promise<T>;
 
-export function on<K extends keyof IDBRequestEventMap>(
-  eventTarget: IDBRequest,
+export function on<T extends IDBTarget, K extends keyof IDBEventMap<T>>(
+  eventTarget: T,
   eventName: K,
   options?: OnOptions,
-): AsyncIterableIterator<IDBRequestEventMap[K]>;
-
-export function on<K extends keyof IDBOpenDBRequestEventMap>(
-  eventTarget: IDBOpenDBRequest,
-  eventName: K,
-  options?: OnOptions,
-): AsyncIterableIterator<IDBOpenDBRequestEventMap[K]>;
-
-export function on<K extends keyof IDBTransactionEventMap>(
-  eventTarget: IDBTransaction,
-  eventName: K,
-  options?: OnOptions,
-): AsyncIterableIterator<IDBTransactionEventMap[K]>;
-
-export function on<K extends keyof IDBDatabaseEventMap>(
-  eventTarget: IDBDatabase,
-  eventName: K,
-  options?: OnOptions,
-): AsyncIterableIterator<IDBDatabaseEventMap[K]>;
+): AsyncIterableIterator<IDBEventMap<T>[K]>;
 
 export function on<T extends Event = Event>(
   eventTarget: EventTarget,

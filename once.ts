@@ -1,6 +1,4 @@
-type OnceOptions = {
-  signal?: AbortSignal;
-};
+import type { IDBEventMap, IDBTarget, OnceOptions } from './types';
 
 const getAbortReason = (signal?: AbortSignal) => {
   if (!signal) {
@@ -16,29 +14,11 @@ const getAbortReason = (signal?: AbortSignal) => {
   return error;
 };
 
-export function once<K extends keyof IDBRequestEventMap>(
-  eventTarget: IDBRequest,
+export function once<T extends IDBTarget, K extends keyof IDBEventMap<T>>(
+  eventTarget: T,
   eventName: K,
   options?: OnceOptions,
-): Promise<IDBRequestEventMap[K]>;
-
-export function once<K extends keyof IDBOpenDBRequestEventMap>(
-  eventTarget: IDBOpenDBRequest,
-  eventName: K,
-  options?: OnceOptions,
-): Promise<IDBOpenDBRequestEventMap[K]>;
-
-export function once<K extends keyof IDBTransactionEventMap>(
-  eventTarget: IDBTransaction,
-  eventName: K,
-  options?: OnceOptions,
-): Promise<IDBTransactionEventMap[K]>;
-
-export function once<K extends keyof IDBDatabaseEventMap>(
-  eventTarget: IDBDatabase,
-  eventName: K,
-  options?: OnceOptions,
-): Promise<IDBDatabaseEventMap[K]>;
+): Promise<IDBEventMap<T>[K]>;
 
 export function once<T extends Event = Event>(
   eventTarget: EventTarget,

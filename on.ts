@@ -1,6 +1,4 @@
-type OnOptions = {
-  signal?: AbortSignal;
-};
+import type { IDBEventMap, IDBTarget, OnOptions } from './types';
 
 const getAbortReason = (signal?: AbortSignal) => {
   if (!signal) {
@@ -16,26 +14,11 @@ const getAbortReason = (signal?: AbortSignal) => {
   return error;
 };
 
-export function on<K extends keyof IDBRequestEventMap>(
-  eventTarget: IDBRequest,
+export function on<T extends IDBTarget, K extends keyof IDBEventMap<T>>(
+  eventTarget: T,
   eventName: K,
   options?: OnOptions,
-): AsyncIterableIterator<IDBRequestEventMap[K]>;
-export function on<K extends keyof IDBOpenDBRequestEventMap>(
-  eventTarget: IDBOpenDBRequest,
-  eventName: K,
-  options?: OnOptions,
-): AsyncIterableIterator<IDBOpenDBRequestEventMap[K]>;
-export function on<K extends keyof IDBTransactionEventMap>(
-  eventTarget: IDBTransaction,
-  eventName: K,
-  options?: OnOptions,
-): AsyncIterableIterator<IDBTransactionEventMap[K]>;
-export function on<K extends keyof IDBDatabaseEventMap>(
-  eventTarget: IDBDatabase,
-  eventName: K,
-  options?: OnOptions,
-): AsyncIterableIterator<IDBDatabaseEventMap[K]>;
+): AsyncIterableIterator<IDBEventMap<T>[K]>;
 export function on<T extends Event = Event>(
   eventTarget: EventTarget,
   eventName: string,

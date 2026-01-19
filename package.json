@@ -12,6 +12,8 @@
   "files": [
     "index.ts",
     "index.d.ts",
+    "types.ts",
+    "types.d.ts",
     "adoptRequest.ts",
     "on.ts",
     "once.ts"
