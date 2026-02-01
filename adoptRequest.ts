@@ -1,21 +1,35 @@
-export function adoptRequest<T>(request: IDBRequest<T>): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    function cleanup() {
-      request.removeEventListener('success', handleSuccess);
-      request.removeEventListener('error', handleError);
-    }
+export class AdoptRequest<T> {
+  private readonly request: IDBRequest<T>;
 
-    function handleSuccess() {
-      cleanup();
-      resolve(request.result as T);
-    }
+  constructor(request: IDBRequest<T>) {
+    this.request = request;
+  }
 
-    function handleError() {
-      cleanup();
-      reject(request.error);
-    }
+  toPromise(): Promise<T> {
+    const { request } = this;
+    const controller = new AbortController();
 
-    request.addEventListener('success', handleSuccess, { once: true });
-    request.addEventListener('error', handleError, { once: true });
-  });
+    const promise = new Promise<T>((resolve, reject) => {
+      const handleSuccess = () => {
+        controller.abort();
+        resolve(request.result as T);
+      };
+
+      const handleError = () => {
+        controller.abort();
+        reject(request.error);
+      };
+
+      request.addEventListener('success', handleSuccess, {
+        signal: controller.signal,
+      });
+      request.addEventListener('error', handleError, {
+        signal: controller.signal,
+      });
+    });
+
+    return promise.finally(() => {
+      controller.abort();
+    });
+  }
 }

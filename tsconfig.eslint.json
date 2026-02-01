@@ -2,11 +2,16 @@
   "extends": "./tsconfig.json",
   "files": [
     "./adoptRequest.ts",
+    "./abort.ts",
+    "./cursor.ts",
     "./index.ts",
     "./index.d.ts",
     "./on.ts",
     "./once.ts",
+    "./types.ts",
+    "./types.d.ts",
     "./tests/adoptRequest.test.ts",
+    "./tests/cursor.test.ts",
     "./tests/on.test.ts",
     "./tests/once.test.ts"
   ]

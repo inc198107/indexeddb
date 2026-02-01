@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { on } from '../on';
+import { On } from '../on';
 
 class TestErrorEvent extends Event {
   error: unknown;
@@ -13,7 +13,7 @@ class TestErrorEvent extends Event {
 
 test('on yields events in order', async () => {
   const target = new EventTarget();
-  const iterator = on<Event>(target, 'data');
+  const iterator = new On<Event>(target, 'data');
 
   const nextOne = iterator.next();
   target.dispatchEvent(new Event('data'));
@@ -27,7 +27,7 @@ test('on yields events in order', async () => {
 
 test('on rejects pending next on error event', async () => {
   const target = new EventTarget();
-  const iterator = on<Event>(target, 'data');
+  const iterator = new On<Event>(target, 'data');
   const error = new Error('boom');
 
   const pending = iterator.next();
@@ -39,7 +39,7 @@ test('on rejects pending next on error event', async () => {
 test('on rejects pending next on abort', async () => {
   const target = new EventTarget();
   const controller = new AbortController();
-  const iterator = on<Event>(target, 'data', { signal: controller.signal });
+  const iterator = new On<Event>(target, 'data', { signal: controller.signal });
   const error = new Error('stop');
 
   const pending = iterator.next();

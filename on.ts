@@ -1,127 +1,125 @@
 import { getAbortReason } from './abort';
 import type { IDBEventMap, IDBTarget, OnOptions } from './types';
 
-export function on<T extends IDBTarget, K extends keyof IDBEventMap<T>>(
-  eventTarget: T,
-  eventName: K,
-  options?: OnOptions,
-): AsyncIterableIterator<IDBEventMap<T>[K]>;
-export function on<T extends Event = Event>(
-  eventTarget: EventTarget,
-  eventName: string,
-  options?: OnOptions,
-): AsyncIterableIterator<T>;
-export function on<T extends Event = Event>(
-  eventTarget: EventTarget,
-  eventName: string,
-  options: OnOptions = {},
-): AsyncIterableIterator<T> {
-  const queue: Event[] = [];
-  const pending: Array<{
-    resolve: (value: IteratorResult<T>) => void;
+const DONE: IteratorResult<Event> = { done: true, value: undefined };
+
+export class On<TEvent = Event> implements AsyncIterableIterator<TEvent> {
+  private readonly events: Event[] = [];
+
+  private readonly resolvers: Array<{
+    resolve: (value: IteratorResult<TEvent>) => void;
     reject: (reason?: unknown) => void;
   }> = [];
-  let finished = false;
-  let error: unknown | null = null;
 
-  function cleanup() {
-    eventTarget.removeEventListener(eventName, handleEvent);
-    if (eventName !== 'error') {
-      eventTarget.removeEventListener('error', handleError);
-    }
-    if (options.signal) {
-      options.signal.removeEventListener('abort', handleAbort);
-    }
-  }
+  private readonly abortController: AbortController;
 
-  function handleEvent(event: Event) {
-    if (finished || error) {
-      return;
-    }
-    if (pending.length > 0) {
-      const { resolve } = pending.shift()!;
-      resolve({ value: event as T, done: false });
-      return;
-    }
-    queue.push(event);
-  }
+  private done = false;
 
-  function handleError(event: Event) {
-    if (finished || error) {
-      return;
-    }
-    error = (event as ErrorEvent).error ?? event;
-    cleanup();
-    while (pending.length > 0) {
-      const { reject } = pending.shift()!;
-      reject(error);
-    }
-  }
+  constructor(
+    private readonly eventTarget: EventTarget,
+    private readonly eventName: string,
+    private readonly options: OnOptions = {},
+  ) {
+    this.abortController = new AbortController();
 
-  function handleAbort() {
-    if (finished || error) {
-      return;
-    }
-    error = getAbortReason(options.signal);
-    cleanup();
-    while (pending.length > 0) {
-      const { reject } = pending.shift()!;
-      reject(error);
-    }
-  }
-
-  eventTarget.addEventListener(eventName, handleEvent);
-  if (eventName !== 'error') {
-    eventTarget.addEventListener('error', handleError);
-  }
-  if (options.signal) {
-    if (options.signal.aborted) {
-      handleAbort();
-    } else {
-      options.signal.addEventListener('abort', handleAbort, { once: true });
-    }
-  }
-
-  return {
-    [Symbol.asyncIterator]() {
-      return this;
-    },
-    next() {
-      if (error) {
-        return Promise.reject(error);
+    const listener = (event: Event) => {
+      if (this.resolvers.length > 0) {
+        const { resolve } = this.resolvers.shift()!;
+        resolve({ done: false, value: event as TEvent });
+      } else {
+        this.events.push(event);
       }
-      if (queue.length > 0) {
-        const event = queue.shift()!;
-        return Promise.resolve({ value: event as T, done: false });
-      }
-      if (finished) {
-        return Promise.resolve({
-          value: undefined as unknown as T,
-          done: true,
-        });
-      }
-      return new Promise<IteratorResult<T>>((resolve, reject) => {
-        pending.push({ resolve, reject });
-      });
-    },
-    return() {
-      finished = true;
-      cleanup();
-      while (pending.length > 0) {
-        const { resolve } = pending.shift()!;
-        resolve({ value: undefined as unknown as T, done: true });
-      }
-      return Promise.resolve({ value: undefined as unknown as T, done: true });
-    },
-    throw(reason?: unknown) {
-      finished = true;
-      error = reason ?? new Error('Async iterator error');
-      cleanup();
-      while (pending.length > 0) {
-        const { reject } = pending.shift()!;
+    };
+
+    const onerror = (event: Event) => {
+      const error = (event as ErrorEvent).error ?? event;
+      if (this.resolvers.length > 0) {
+        const { reject } = this.resolvers.shift()!;
         reject(error);
+        this.finalize();
+      } else {
+        this.finalize();
+        this.events.push(event);
       }
-      return Promise.reject(error);
-    },
-  };
+    };
+
+    this.eventTarget.addEventListener(this.eventName, listener, {
+      signal: this.abortController.signal,
+    });
+    if (this.eventName !== 'error') {
+      this.eventTarget.addEventListener('error', onerror, {
+        signal: this.abortController.signal,
+      });
+    }
+
+    if (this.options.signal) {
+      if (this.options.signal.aborted) {
+        this.finalize();
+      } else {
+        this.options.signal.addEventListener(
+          'abort',
+          () => {
+            const error = getAbortReason(this.options.signal);
+            if (this.resolvers.length > 0) {
+              const { reject } = this.resolvers.shift()!;
+              reject(error);
+            }
+            this.finalize();
+          },
+          { once: true },
+        );
+      }
+    }
+  }
+
+  static from<T extends IDBTarget, K extends keyof IDBEventMap<T>>(
+    eventTarget: T,
+    eventName: K,
+    options?: OnOptions,
+  ): On<IDBEventMap<T>[K]> {
+    return new On(eventTarget, eventName as string, options);
+  }
+
+  [Symbol.asyncIterator]() {
+    return this;
+  }
+
+  async next(): Promise<IteratorResult<TEvent>> {
+    if (this.events.length > 0) {
+      const event = this.events.shift()!;
+      if (event.type === 'error') {
+        throw (event as ErrorEvent).error ?? event;
+      }
+      return { done: false, value: event as TEvent };
+    }
+    if (this.done) {
+      return DONE as IteratorResult<TEvent>;
+    }
+    return new Promise<IteratorResult<TEvent>>((resolve, reject) => {
+      this.resolvers.push({ resolve, reject });
+    });
+  }
+
+  async return(): Promise<IteratorResult<TEvent>> {
+    this.finalize();
+    return DONE as IteratorResult<TEvent>;
+  }
+
+  async throw(): Promise<IteratorResult<TEvent>> {
+    this.finalize();
+    return DONE as IteratorResult<TEvent>;
+  }
+
+  private finalize() {
+    if (this.done) {
+      return;
+    }
+    this.done = true;
+    this.abortController.abort();
+    this.events.length = 0;
+    while (this.resolvers.length > 0) {
+      const { resolve } = this.resolvers.shift()!;
+      resolve(DONE as IteratorResult<TEvent>);
+    }
+  }
 }

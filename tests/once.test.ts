@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { once } from '../once';
+import { Once } from '../once';
 
 class TestErrorEvent extends Event {
   error: unknown;
@@ -13,7 +13,7 @@ class TestErrorEvent extends Event {
 
 test('once resolves with event data', async () => {
   const target = new EventTarget();
-  const promise = once<Event>(target, 'ready');
+  const promise = new Once<Event>(target, 'ready').listen();
   target.dispatchEvent(new Event('ready'));
 
   const event = await promise;
@@ -23,7 +23,7 @@ test('once resolves with event data', async () => {
 test('once rejects on error event', async () => {
   const target = new EventTarget();
   const error = new Error('fail');
-  const promise = once<Event>(target, 'ready');
+  const promise = new Once<Event>(target, 'ready').listen();
   target.dispatchEvent(new TestErrorEvent(error));
 
   await assert.rejects(promise, error);
@@ -33,7 +33,7 @@ test('once rejects on abort with abort reason', async () => {
   const target = new EventTarget();
   const controller = new AbortController();
   const error = new Error('stop');
-  const promise = once<Event>(target, 'ready', { signal: controller.signal });
+  const promise = new Once<Event>(target, 'ready', { signal: controller.signal }).listen();
 
   controller.abort(error);
 

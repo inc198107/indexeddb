@@ -33,5 +33,24 @@ module.exports = {
       'error',
       { functions: false, classes: true, variables: true, typedefs: true },
     ],
+    'max-classes-per-file': ['error', { max: 1, ignoreExpressions: true }],
   },
+  overrides: [
+    {
+      files: ['*.d.ts'],
+      rules: {
+        'max-classes-per-file': 'off',
+      },
+    },
+    {
+      files: ['tests/**/*.ts'],
+      rules: {
+        'max-classes-per-file': 'off',
+        'no-underscore-dangle': 'off',
+        'class-methods-use-this': 'off',
+        '@typescript-eslint/no-dupe-class-members': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
+      },
+    },
+  ],
 };
