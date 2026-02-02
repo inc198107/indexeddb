@@ -17,6 +17,7 @@
     "abort.ts",
     "adoptRequest.ts",
     "cursor.ts",
+    "IDBIndex.ts",
     "on.ts",
     "once.ts"
   ],

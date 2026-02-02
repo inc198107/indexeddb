@@ -38,6 +38,45 @@ export class AdoptRequest<T> {
   toPromise(): Promise<T>;
 }
 
+export class IndexAdapter {
+  constructor(index: IDBIndex);
+
+  static from(index: IDBIndex): IndexAdapter;
+
+  readonly name: string;
+
+  readonly objectStore: IDBObjectStore;
+
+  readonly keyPath: string | string[];
+
+  readonly multiEntry: boolean;
+
+  readonly unique: boolean;
+
+  get(key: IDBValidKey | IDBKeyRange): Promise<unknown>;
+
+  getAll(query?: IDBValidKey | IDBKeyRange, count?: number): Promise<unknown[]>;
+
+  getAllKeys(
+    query?: IDBValidKey | IDBKeyRange,
+    count?: number,
+  ): Promise<IDBValidKey[]>;
+
+  getKey(query?: IDBValidKey | IDBKeyRange): Promise<IDBValidKey | undefined>;
+
+  count(query?: IDBValidKey | IDBKeyRange): Promise<number>;
+
+  openCursor(
+    range?: IDBValidKey | IDBKeyRange,
+    direction?: IDBCursorDirection,
+  ): AsyncGenerator<Cursor, void, undefined>;
+
+  openKeyCursor(
+    range?: IDBValidKey | IDBKeyRange,
+    direction?: IDBCursorDirection,
+  ): AsyncGenerator<Cursor, void, undefined>;
+}
+
 export class Cursor {
   constructor(cursor: IDBCursor | IDBCursorWithValue);
 

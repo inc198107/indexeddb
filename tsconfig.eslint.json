@@ -4,6 +4,7 @@
     "./adoptRequest.ts",
     "./abort.ts",
     "./cursor.ts",
+    "./IDBIndex.ts",
     "./index.ts",
     "./index.d.ts",
     "./on.ts",
@@ -12,6 +13,7 @@
     "./types.d.ts",
     "./tests/adoptRequest.test.ts",
     "./tests/cursor.test.ts",
+    "./tests/IDBIndex.test.ts",
     "./tests/on.test.ts",
     "./tests/once.test.ts"
   ]
