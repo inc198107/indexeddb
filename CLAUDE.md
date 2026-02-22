@@ -5,7 +5,7 @@
 TypeScript library providing promise-based and async iterator utilities for the IndexedDB API.
 Private package, no external runtime dependencies.
 
-**Open PR:** https://github.com/0xDazzer/indexeddb/pull/21
+**Open PR:** https://github.com/0xDazzer/indexeddb/pull/25
 **Upstream:** https://github.com/0xDazzer/indexeddb
 **Fork:** https://github.com/inc198107/indexeddb (branch: `my_ideal_branch`)
 
@@ -32,8 +32,9 @@ npm run format    # Format with Prettier
 | Skill | When to use |
 |-------|-------------|
 | `/new-adapter` | Add a new IDB interface adapter (e.g. `IDBOpenDBRequest`) |
-| `/check` | Full quality gate: tests + lint before committing |
+| `/check` | Full quality gate: tests + tsc + lint before committing |
 | `/pr-update` | Push changes and update PR description |
+| `/code-review` | Review all adapters and tests for correctness, coverage, and patterns |
 
 ## Project Structure
 
