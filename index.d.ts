@@ -115,7 +115,7 @@ export class ObjectStoreAdapter {
 
   readonly name: string;
 
-  readonly keyPath: string | string[];
+  readonly keyPath: string | string[] | null;
 
   readonly indexNames: string[];
 

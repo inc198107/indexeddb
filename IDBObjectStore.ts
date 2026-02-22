@@ -9,7 +9,7 @@ export class ObjectStoreAdapter {
     return this.store.name;
   }
 
-  get keyPath(): string | string[] {
+  get keyPath(): string | string[] | null {
     return this.store.keyPath;
   }
 

@@ -54,22 +54,22 @@ class MockIDBObjectStore implements IDBObjectStore {
   deleteIndex(_name: string): void {}
 
   get(_query: IDBValidKey | IDBKeyRange): IDBRequest<unknown> {
-    return createRequest(undefined);
+    return createRequest<unknown>(undefined);
   }
 
   getAll(_query?: IDBValidKey | IDBKeyRange | null, _count?: number): IDBRequest<unknown[]> {
-    return createRequest([]);
+    return createRequest<unknown[]>([]);
   }
 
   getAllKeys(
     _query?: IDBValidKey | IDBKeyRange | null,
     _count?: number,
   ): IDBRequest<IDBValidKey[]> {
-    return createRequest([]);
+    return createRequest<IDBValidKey[]>([]);
   }
 
   getKey(_query: IDBValidKey | IDBKeyRange): IDBRequest<IDBValidKey | undefined> {
-    return createRequest(undefined);
+    return createRequest<IDBValidKey | undefined>(undefined);
   }
 
   index(_name: string): IDBIndex {
@@ -80,14 +80,14 @@ class MockIDBObjectStore implements IDBObjectStore {
     _query?: IDBValidKey | IDBKeyRange | null,
     _direction?: IDBCursorDirection,
   ): IDBRequest<IDBCursorWithValue | null> {
-    return createRequest(null);
+    return createRequest<IDBCursorWithValue | null>(null);
   }
 
   openKeyCursor(
     _query?: IDBValidKey | IDBKeyRange | null,
     _direction?: IDBCursorDirection,
   ): IDBRequest<IDBCursor | null> {
-    return createRequest(null);
+    return createRequest<IDBCursor | null>(null);
   }
 
   put(_value: unknown, _key?: IDBValidKey): IDBRequest<IDBValidKey> {

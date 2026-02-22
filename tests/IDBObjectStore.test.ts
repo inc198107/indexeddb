@@ -68,22 +68,22 @@ class MockIDBObjectStore implements IDBObjectStore {
   deleteIndex(_name: string): void {}
 
   get(_query: IDBValidKey | IDBKeyRange): IDBRequest<unknown> {
-    return createRequest({ id: 1, name: 'test' });
+    return createRequest<unknown>({ id: 1, name: 'test' });
   }
 
   getAll(_query?: IDBValidKey | IDBKeyRange | null, _count?: number): IDBRequest<unknown[]> {
-    return createRequest([{ id: 1 }, { id: 2 }]);
+    return createRequest<unknown[]>([{ id: 1 }, { id: 2 }]);
   }
 
   getAllKeys(
     _query?: IDBValidKey | IDBKeyRange | null,
     _count?: number,
   ): IDBRequest<IDBValidKey[]> {
-    return createRequest([1, 2, 3] as IDBValidKey[]);
+    return createRequest<IDBValidKey[]>([1, 2, 3] as IDBValidKey[]);
   }
 
   getKey(_query: IDBValidKey | IDBKeyRange): IDBRequest<IDBValidKey | undefined> {
-    return createRequest(1 as IDBValidKey);
+    return createRequest<IDBValidKey | undefined>(1 as IDBValidKey);
   }
 
   index(name: string): IDBIndex {

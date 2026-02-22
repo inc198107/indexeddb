@@ -22,25 +22,25 @@ class MockIDBIndex implements IDBIndex {
   unique = false;
 
   get(_key: IDBValidKey | IDBKeyRange): IDBRequest<unknown> {
-    return createRequest({ id: 1, name: 'a' });
+    return createRequest<unknown>({ id: 1, name: 'a' });
   }
 
   getAll(
     _query?: IDBValidKey | IDBKeyRange,
     _count?: number,
   ): IDBRequest<unknown[]> {
-    return createRequest([{ id: 1 }, { id: 2 }]);
+    return createRequest<unknown[]>([{ id: 1 }, { id: 2 }]);
   }
 
   getAllKeys(
     _query?: IDBValidKey | IDBKeyRange,
     _count?: number,
   ): IDBRequest<IDBValidKey[]> {
-    return createRequest([1, 2, 3]);
+    return createRequest<IDBValidKey[]>([1, 2, 3]);
   }
 
   getKey(_query?: IDBValidKey | IDBKeyRange): IDBRequest<IDBValidKey | undefined> {
-    return createRequest(1);
+    return createRequest<IDBValidKey | undefined>(1);
   }
 
   count(_query?: IDBValidKey | IDBKeyRange): IDBRequest<number> {
