@@ -18,6 +18,9 @@
     "adoptRequest.ts",
     "cursor.ts",
     "IDBIndex.ts",
+    "IDBObjectStore.ts",
+    "IDBTransaction.ts",
+    "IDBDatabase.ts",
     "on.ts",
     "once.ts"
   ],

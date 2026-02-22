@@ -107,3 +107,103 @@ export class Cursor {
 
   update(value: unknown): Promise<IDBValidKey>;
 }
+
+export class ObjectStoreAdapter {
+  constructor(store: IDBObjectStore);
+
+  static from(store: IDBObjectStore): ObjectStoreAdapter;
+
+  readonly name: string;
+
+  readonly keyPath: string | string[];
+
+  readonly indexNames: string[];
+
+  readonly autoIncrement: boolean;
+
+  readonly transaction: IDBTransaction;
+
+  add(value: unknown, key?: IDBValidKey): Promise<IDBValidKey>;
+
+  clear(): Promise<undefined>;
+
+  count(query?: IDBValidKey | IDBKeyRange): Promise<number>;
+
+  delete(query: IDBValidKey | IDBKeyRange): Promise<undefined>;
+
+  get(query: IDBValidKey | IDBKeyRange): Promise<unknown>;
+
+  getAll(query?: IDBValidKey | IDBKeyRange | null, count?: number): Promise<unknown[]>;
+
+  getAllKeys(query?: IDBValidKey | IDBKeyRange | null, count?: number): Promise<IDBValidKey[]>;
+
+  getKey(query: IDBValidKey | IDBKeyRange): Promise<IDBValidKey | undefined>;
+
+  put(value: unknown, key?: IDBValidKey): Promise<IDBValidKey>;
+
+  createIndex(
+    name: string,
+    keyPath: string | string[],
+    options?: IDBIndexParameters,
+  ): IndexAdapter;
+
+  deleteIndex(name: string): void;
+
+  index(name: string): IndexAdapter;
+
+  openCursor(
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+  ): AsyncGenerator<Cursor, void, undefined>;
+
+  openKeyCursor(
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+  ): AsyncGenerator<Cursor, void, undefined>;
+}
+
+export class TransactionAdapter {
+  constructor(transaction: IDBTransaction);
+
+  static from(transaction: IDBTransaction): TransactionAdapter;
+
+  readonly db: IDBDatabase;
+
+  readonly durability: IDBTransactionDurability;
+
+  readonly error: DOMException | null;
+
+  readonly mode: IDBTransactionMode;
+
+  readonly objectStoreNames: string[];
+
+  objectStore(name: string): ObjectStoreAdapter;
+
+  commit(): void;
+
+  abort(): void;
+}
+
+export class DatabaseAdapter {
+  constructor(db: IDBDatabase);
+
+  static from(db: IDBDatabase): DatabaseAdapter;
+
+  readonly name: string;
+
+  readonly version: number;
+
+  readonly objectStoreNames: string[];
+
+  close(): void;
+
+  deleteObjectStore(name: string): void;
+
+  createObjectStore(name: string, options?: IDBObjectStoreParameters): ObjectStoreAdapter;
+
+  transaction(
+    storeNames: string | string[],
+    mode?: IDBTransactionMode,
+    options?: IDBTransactionOptions,
+  ): TransactionAdapter;
+}
